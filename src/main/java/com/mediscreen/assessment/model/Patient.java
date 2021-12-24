@@ -19,8 +19,7 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(Long id, String givenName, String familyName, Date birthdate, String sex, String homeAddress, String phoneNumber) {
-        this.id = id;
+    public Patient(String givenName, String familyName, Date birthdate, String sex, String homeAddress, String phoneNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthdate = birthdate;
@@ -98,6 +97,16 @@ public class Patient {
     }
 
 
-
-
+    @Override
+    public String toString() {
+        return "Patient{" +
+                "id=" + id +
+                ", givenName='" + givenName + '\'' +
+                ", familyName='" + familyName + '\'' +
+                ", birthdate=" + birthdate +
+                ", sex='" + sex + '\'' +
+                ", homeAddress='" + homeAddress + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
 }

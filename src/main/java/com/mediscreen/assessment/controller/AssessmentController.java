@@ -1,46 +1,38 @@
 package com.mediscreen.assessment.controller;
 
-import com.mediscreen.assessment.model.DiabeteRiskLevel;
+
 import com.mediscreen.assessment.model.Patient;
+import com.mediscreen.assessment.service.AssessmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class AssessmentController {
 
+    @Autowired
+    private AssessmentService assessmentService;
 
-    @RequestMapping("/assess/id")
+
+    @RequestMapping(value = "/assess/id")
     public String accessPatient(@RequestParam(value="patId") Long patId) {
-        return generateAssessment(getPatientDemographics(patId));
+
+        Patient patientToAccess = assessmentService.getPatientDemographics(patId);
+
+        return assessmentService.generateAssessment(patientToAccess);
+
     }
 
     @RequestMapping("/assess/familyName")
     public String accessPatient(@RequestParam(value="familyName") String familyName) {
-        return generateAssessment(getPatientDemographics(familyName));
-    }
 
-    private Patient getPatientDemographics(Long patId) {
-        final String demographicsUri = "http://localhost:8081/patient/getById?Id=" + patId;
-        return new RestTemplate().getForObject(demographicsUri, Patient.class);
-    }
+        Patient patientToAccess = assessmentService.getPatientDemographicsByString(familyName);
 
-    private Patient getPatientDemographics(String familyName) {
-        final String demographicsUri = "http://localhost:8081/patient/getByFamilyName?Name=" + familyName;
-        return new RestTemplate().getForObject(demographicsUri, Patient.class);
-    }
-
-    private String generateAssessment (Patient patient) {
-        return new DiabeteRiskLevel().access(patient, getPatientHistory(patient.getId()));
-    }
-
-    private List<LinkedHashMap<String,String>> getPatientHistory(Long patId) {
-        final String historyUri = "http://localhost:8082/patHistory/get?patId=" + patId;
-        return (List<LinkedHashMap<String,String>>) new RestTemplate().getForObject(historyUri, List.class);
+        return assessmentService.generateAssessment(assessmentService.getPatientDemographicsByString(patientToAccess.getFamilyName()));
     }
 
 
