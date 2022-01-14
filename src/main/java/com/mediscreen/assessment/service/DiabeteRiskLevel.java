@@ -195,14 +195,14 @@ public class DiabeteRiskLevel implements AssessmentService {
 
     // méthodes appelés par le controller pour générer le rapport de diabete.
     public Patient getPatientDemographics(Long patId) {
-        String demographicsUri = "http://localhost:8080/patientById/" + patId;
+        String demographicsUri = "http://patientms:8080/patientById/" + patId;
 
 
         return new RestTemplate().getForObject(demographicsUri, Patient.class);
     }
 
     public Patient getPatientDemographicsByString(String familyName) {
-        String demographicsUri = "http://localhost:8080/patientByName/" + familyName;
+        String demographicsUri = "http://patientms:8080/patientByName/" + familyName;
 
         return new RestTemplate().getForObject(demographicsUri, Patient.class);
 
@@ -216,7 +216,7 @@ public class DiabeteRiskLevel implements AssessmentService {
     }
 
     private List<LinkedHashMap<String,String>> getPatientHistory(Long patId) {
-        final String historyUri = "http://localhost:8181/notesByPatientId/" + patId;
+        final String historyUri = "http://notesms:8181/notesByPatientId/" + patId;
         return (List<LinkedHashMap<String,String>>) new RestTemplate().getForObject(historyUri, List.class);
     }
 

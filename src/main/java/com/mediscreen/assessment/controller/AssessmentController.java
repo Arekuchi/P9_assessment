@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost")
 @RestController
 public class AssessmentController {
 
@@ -19,9 +19,9 @@ public class AssessmentController {
 
 
     @RequestMapping(value = "/assess/id")
-    public String accessPatient(@RequestParam(value="patId") Long patId) {
+    public String accessPatient(@RequestParam(value="id") Long id) {
 
-        Patient patientToAccess = assessmentService.getPatientDemographics(patId);
+        Patient patientToAccess = assessmentService.getPatientDemographics(id);
 
         return assessmentService.generateAssessment(patientToAccess);
 
