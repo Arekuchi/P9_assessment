@@ -1,41 +1,39 @@
 package com.mediscreen.assessment.service;
 
 
-
-    /* Les patients peuvent avoir 4 niveaux de risques.
-
-    - None
-    - Bordeline
-    - In danger
-    - Early onset
-
-    Les règles pour déterminer les niveaux de risques sont les suivants :
-
-    - None : Quand le patient n'a aucune Notes de docteur qui contient les 4 terminologies précédemment énoncés.
-
-    - Borderline : Quand le patient a deux des terminologies précédemment énoncés
-        ET
-        agés de +30 ans.
-
-    - In danger : Dépend de l'âge ET du sexe du patient.
-            Si le patient est : <30 ans ET mâle ET a au moins 3 trigger.
-
-            Si le patient est : <30 ans ET femelle ET a au moins 4 trigger.
-            Si le patient est : >30 ans ET femelle ET a au moins 6 trigger.
-
-     - Early onset : Dépend de l'âge ET du sexe du patient.
-            Si le patient est : <30 ans ET mâle ET a au moins 5 trigger.
-
-            Si le patient est : <30 ans ET femelle ET a au moins 7 trigger.
-            Si le patient est : >30 ans ET femelle ET a au moins 8 trigger
-
-
-      Les trigger (critères) sont :
-      "Hemoglobin A1C", "Microalbumin", "Body Height", "Body Weight", "Smoker",
-      "Abnormal", "Cholesterol", "Dizziness", "Relapse", "Reaction", "Antibodies"
-
-
-     */
+/**
+ * Les patients peuvent avoir 4 niveaux de risques.
+ *
+ *     - None
+ *     - Bordeline
+ *     - In danger
+ *     - Early onset
+ *
+ *     Les règles pour déterminer les niveaux de risques sont les suivants :
+ *
+ *     - None : Quand le patient n'a aucune Notes de docteur qui contient les 4 terminologies précédemment énoncés.
+ *
+ *     - Borderline : Quand le patient a deux des terminologies précédemment énoncés
+ *         ET
+ *         agés de +30 ans.
+ *
+ *     - In danger : Dépend de l'âge ET du sexe du patient.
+ *             Si le patient est : <30 ans ET mâle ET a au moins 3 trigger.
+ *
+ *             Si le patient est : <30 ans ET femelle ET a au moins 4 trigger.
+ *             Si le patient est : >30 ans ET femelle ET a au moins 6 trigger.
+ *
+ *      - Early onset : Dépend de l'âge ET du sexe du patient.
+ *             Si le patient est : <30 ans ET mâle ET a au moins 5 trigger.
+ *
+ *             Si le patient est : <30 ans ET femelle ET a au moins 7 trigger.
+ *             Si le patient est : >30 ans ET femelle ET a au moins 8 trigger
+ *
+ *
+ *       Les trigger (critères) sont :
+ *       "Hemoglobin A1C", "Microalbumin", "Body Height", "Body Weight", "Smoker",
+ *       "Abnormal", "Cholesterol", "Dizziness", "Relapse", "Reaction", "Antibodies"
+ */
 
 import com.mediscreen.assessment.model.Patient;
 import org.springframework.stereotype.Service;
@@ -80,8 +78,11 @@ public class DiabeteRiskLevel implements AssessmentService {
     private final int NUM_EARLY_ONSET_TRIGGERS_FEMALE_UNDER_30 = 7;
 
 
-
-    // Méthode pour récupérer le nombre de critère des notes du médecin.
+    /**
+     * Méthode pour récupérer le nombre de critère des notes du médecin.
+     * @param notes
+     * @return
+     */
     private int generateNumberOfTriggerTerm(List<LinkedHashMap<String, String>> notes) {
         int numberOfTriggerTerm = 0;
 
@@ -99,8 +100,13 @@ public class DiabeteRiskLevel implements AssessmentService {
     }
 
 
-
-    //Méthodes pour définir le niveaux de risques.
+    /**
+     * Méthodes pour définir le niveaux de risques selon les critères donnés.
+     * @param age
+     * @param triggerTerm
+     * @param sex
+     * @return
+     */
     private Boolean isEarlyOnset(int age, int triggerTerm, String sex) {
 
         if(sex.equals("M")) {
@@ -145,9 +151,13 @@ public class DiabeteRiskLevel implements AssessmentService {
 
     }
 
-
-
-    // Méthode pour générer le niveau de risque.
+    /**
+     * Méthode pour générer le niveau de risque.
+     * @param age
+     * @param triggerTerm
+     * @param sex
+     * @return
+     */
     private Assessment generateAssessmentValue(int age, int triggerTerm, String sex) {
 
         if(isEarlyOnset(age, triggerTerm, sex)) {
@@ -165,17 +175,23 @@ public class DiabeteRiskLevel implements AssessmentService {
         return Assessment.ASSESSMENT_NONE;
     }
 
-
-
-
-    // Méthode pour générer toutes les informations
+    /**
+     * Méthode pour générer toutes les informations
+     * @param patient
+     * @param notes
+     * @return
+     */
     public String access(Patient patient, List<LinkedHashMap<String,String>> notes) {
         String assessment = evaluateAssessment(patient, notes);
         return generatePatientResult(patient, assessment);
     }
 
-
-    // Méthode pour générer l'assessment du patient
+    /**
+     * Méthode pour générer l'assessment du patient
+     * @param patient
+     * @param notes
+     * @return
+     */
     private String evaluateAssessment(Patient patient, List<LinkedHashMap<String,String>> notes) {
         int age = patient.getAge();
         int numTriggerTerms = generateNumberOfTriggerTerm(notes);
@@ -184,16 +200,22 @@ public class DiabeteRiskLevel implements AssessmentService {
         return riskLevel [assessment.getValue()];
     }
 
-
-    // Méthode pour générer le résultat du patient (nom, age, et niveau de risque).
+    /**
+     * Méthode pour générer le résultat du patient (nom, age, et niveau de risque).
+     * @param patient
+     * @param assessment
+     * @return
+     */
     private String generatePatientResult(Patient patient, String assessment) {
 
         return "Patient : " + patient.getGivenName() + " " + patient.getFamilyName() + " age : " + patient.getAge() + " diabete assessment is : " + assessment;
     }
 
-
-
-    // méthodes appelés par le controller pour générer le rapport de diabete.
+    /**
+     * Méthode appelés par le controller pour générer le rapport de diabete depuis l'ID du Patient
+      * @param patId
+     * @return
+     */
     public Patient getPatientDemographics(Long patId) {
         String demographicsUri = "http://patientms:8080/patientById/" + patId;
 
@@ -201,6 +223,11 @@ public class DiabeteRiskLevel implements AssessmentService {
         return new RestTemplate().getForObject(demographicsUri, Patient.class);
     }
 
+    /**
+     * Méthode appelés par le controller pour générer le rapport de diabete depuis le nom de famille du Patient
+     * @param familyName
+     * @return
+     */
     public Patient getPatientDemographicsByString(String familyName) {
         String demographicsUri = "http://patientms:8080/patientByName/" + familyName;
 
@@ -209,12 +236,15 @@ public class DiabeteRiskLevel implements AssessmentService {
 
     }
 
-
-
     public String generateAssessment(Patient patient) {
         return access(patient, getPatientHistory(patient.getId()));
     }
 
+    /**
+     * Méthode qui récolte les informations du patient en allant chercher toutes les Notes du Patient.
+     * @param patId
+     * @return
+     */
     private List<LinkedHashMap<String,String>> getPatientHistory(Long patId) {
         final String historyUri = "http://notesms:8181/notesByPatientId/" + patId;
         return (List<LinkedHashMap<String,String>>) new RestTemplate().getForObject(historyUri, List.class);

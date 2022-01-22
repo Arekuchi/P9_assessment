@@ -17,7 +17,11 @@ public class AssessmentController {
     @Autowired
     private AssessmentService assessmentService;
 
-
+    /**
+     * Méthode pour générer le rapport de diabète depuis l'ID
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "/assess/id")
     public String accessPatient(@RequestParam(value="id") Long id) {
 
@@ -27,6 +31,11 @@ public class AssessmentController {
 
     }
 
+    /**
+     * Méthode pour générer le rapport de diabète depuis le nom de famille
+     * @param familyName
+     * @return
+     */
     @RequestMapping("/assess/familyName")
     public String accessPatient(@RequestParam(value="familyName") String familyName) {
 
@@ -34,7 +43,4 @@ public class AssessmentController {
 
         return assessmentService.generateAssessment(assessmentService.getPatientDemographicsByString(patientToAccess.getFamilyName()));
     }
-
-
-
 }
